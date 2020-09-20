@@ -19,27 +19,32 @@ import {
   PaginationItem,
   PaginationLink,
   Button,
+  Input,
 } from "reactstrap";
 
 export default class HomePage extends React.Component {
   state = {
-    items: [],
+    items:[],
+    allItems: [],
     count: null,
     dataPerPage: null,
     currentPage: 1,
+    search:''
   };
 
   componentDidMount() {
     this.getItems();
   }
 
-  getItems = async (number) => {
+  getItems =  (number) => {
     axios.get(`http://localhost:8080/items?page=${number}`).then((res) => {
-      const items = res.data.data;
+      const allItems = res.data.data;
+      const items= res.data.data;
       const page = res.data.pageInfo;
-      console.log(page);
+      console.log(items);
       // console.log('data',items);
       this.setState({
+        allItems,
         items,
         count: page.count,
         dataPerPage: page.dataPerPage,
@@ -48,6 +53,13 @@ export default class HomePage extends React.Component {
     });
   };
 
+  handleSearch = (event) => {
+    this.setState({
+      search: event.target.value,
+      items: this.state.allItems.filter((items) => new RegExp(event.target.value, "i").exec(items.name))
+    })
+    
+  }
   render() {
     let renderPageNumber;
     const pageNumbers = [];
@@ -64,7 +76,7 @@ export default class HomePage extends React.Component {
         let classes = this.state.currentPage === number;
 
         return (
-          <PaginationLink key={number} onClick={() => this.getItems(number)}>
+          <PaginationLink key={number} className={classes} onClick={() => this.getItems(number)}>
             {" "}
             {number}
           </PaginationLink>
@@ -76,6 +88,8 @@ export default class HomePage extends React.Component {
       <>
         <Navigation />
         <Container sm={4}>
+        <Input type='text' placeholder="Search......." value={this.state.search}
+            onChange={this.handleSearch}/>
           <Jumbotron className="mt-5">
             <h1>Hello</h1>
           </Jumbotron>
