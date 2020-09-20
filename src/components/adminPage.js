@@ -114,7 +114,7 @@ class AdminPage extends React.Component {
         console.log(err);
       });
   };
-
+//
   handleEditItems = (event) => {
     event.preventDefault();
     const id = this.state.id;
